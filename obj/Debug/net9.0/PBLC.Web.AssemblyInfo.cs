@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PBLC.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+27c90883cb53bef1285efee724b3f3f198c68b75")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f54b90d0d09cdbe51645c52203577c3689cef5d2")]
 [assembly: System.Reflection.AssemblyProductAttribute("PBLC.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PBLC.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
