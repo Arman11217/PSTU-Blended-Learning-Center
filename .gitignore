@@ -1,0 +1,72 @@
+# Build results
+bin/
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.iml
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# User-specific files
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json.template
+
+# Secrets and local configuration
+appsettings.local.json
+*.local.json
+secrets.json
+.env
+.env.local
+
+# NuGet
+packages/
+*.nuget.props
+*.nuget.targets
+.nuget/
+
+# Build output
+dist/
+release/
+*.log
+
+# Local upload directories
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep
+
+# Entity Framework
+*.db-shm
+*.db-wal
+
+# Test Results
+TestResults/
+*.trx
+
+# Logs
+logs/
+
+# System files
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Node modules (if using npm)
+node_modules/
+
