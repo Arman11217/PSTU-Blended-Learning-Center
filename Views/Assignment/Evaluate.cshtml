@@ -1,0 +1,139 @@
+@model PBLC.Web.Models.Entities.AssignmentSubmission
+@{
+    ViewData["Title"] = "Evaluate Submission";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="bi bi-clipboard-check"></i> Evaluate Submission</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Assignment Info -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5>@Model.Assignment.Title</h5>
+                            <p class="text-muted mb-2">@Model.Assignment.Description</p>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-info">Total Marks: @Model.Assignment.MaxMarks</span>
+                                <span class="badge bg-secondary">Due: @Model.Assignment.DueDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Student Info -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="bi bi-person"></i> Student Information</h6>
+                            <p class="mb-1"><strong>Name:</strong> @Model.Student.FullName</p>
+                            <p class="mb-1"><strong>Email:</strong> @Model.Student.Email</p>
+                            <p class="mb-0">
+                                <strong>Submitted:</strong> @Model.SubmittedAt.ToString("MMM dd, yyyy hh:mm tt")
+                                @if (Model.SubmittedAt > Model.Assignment.DueDate)
+                                {
+                                    <span class="badge bg-danger ms-2">Late Submission</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success ms-2">On Time</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Submission Content -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="bi bi-file-text"></i> Submission Content</h6>
+                            
+                            @if (!string.IsNullOrWhiteSpace(Model.Comments))
+                            {
+                                <div class="border p-3 mb-3 bg-light">
+                                    <pre style="white-space: pre-wrap; font-family: inherit;">@Model.Comments</pre>
+                                </div>
+                            }
+                            
+                            @if (!string.IsNullOrWhiteSpace(Model.SubmissionUrl))
+                            {
+                                <div class="alert alert-info">
+                                    <i class="bi bi-file-earmark"></i> 
+                                    <strong>Attached File:</strong> 
+                                    <a href="@Model.SubmissionUrl" target="_blank" class="alert-link">Download Submission File</a>
+                                </div>
+                            }
+
+                            @if (string.IsNullOrWhiteSpace(Model.Comments) && string.IsNullOrWhiteSpace(Model.SubmissionUrl))
+                            {
+                                <p class="text-muted">No content or file submitted.</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Form -->
+                    <div class="card">
+                        <div class="card-body bg-light">
+                            <h6><i class="bi bi-pencil-square"></i> Evaluation</h6>
+                            
+                            <form asp-action="Evaluate" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="marksObtained" class="form-label">Marks Obtained <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="marksObtained" name="marksObtained" 
+                                               min="0" max="@Model.Assignment.MaxMarks" 
+                                               value="@Model.ObtainedMarks" required>
+                                        <div class="form-text">Out of @Model.Assignment.MaxMarks marks</div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Status</label>
+                                        <div class="form-control-plaintext">
+                                            @if (Model.ObtainedMarks.HasValue)
+                                            {
+                                                <span class="badge bg-success">Already Evaluated</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning">Pending Evaluation</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="feedback" class="form-label">Feedback</label>
+                                    <textarea class="form-control" id="feedback" name="feedback" rows="4" 
+                                              placeholder="Provide feedback to the student...">@Model.Feedback</textarea>
+                                </div>
+
+                                @if (!ViewData.ModelState.IsValid)
+                                {
+                                    <div class="alert alert-danger">
+                                        <ul class="mb-0">
+                                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                            {
+                                                <li>@error.ErrorMessage</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="@Url.Action("Submissions", new { assignmentId = Model.AssignmentId })" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left"></i> Back to Submissions
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle"></i> Save Evaluation
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

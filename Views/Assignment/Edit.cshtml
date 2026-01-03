@@ -1,0 +1,93 @@
+@model PBLC.Web.Models.Entities.Assignment
+@{
+    ViewData["Title"] = "Edit Assignment";
+    var course = ViewBag.Course as PBLC.Web.Models.Entities.Course;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Edit Assignment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Editing assignment for: <strong>@course?.Name</strong>
+                    </div>
+
+                    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Assignment Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" value="@Model.Title" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required placeholder="Assignment instructions and requirements">@Model.Description</textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="dueDate" class="form-label">Due Date <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control" id="dueDate" name="dueDate" 
+                                       value="@Model.DueDate.ToString("yyyy-MM-ddTHH:mm")" required>
+                                <small class="form-text text-muted">
+                                    Current: @Model.DueDate.ToString("MMM dd, yyyy hh:mm tt")
+                                </small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="totalMarks" class="form-label">Total Marks <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="totalMarks" name="totalMarks" 
+                                       value="@Model.MaxMarks" min="1" max="100" required>
+                            </div>
+                        </div>
+
+                        @if (Model.Submissions != null && Model.Submissions.Any())
+                        {
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> 
+                                <strong>Note:</strong> This assignment has @Model.Submissions.Count submission(s). 
+                                Changing marks may affect grading.
+                            </div>
+                        }
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("MyCourses", "Teacher")" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Update Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Set minimum date to today
+        const dateInput = document.getElementById('dueDate');
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        dateInput.min = now.toISOString().slice(0, 16);
+    </script>
+}

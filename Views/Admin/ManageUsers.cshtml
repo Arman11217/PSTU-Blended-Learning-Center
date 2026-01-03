@@ -1,0 +1,192 @@
+@model IEnumerable<PBLC.Web.Models.Entities.ApplicationUser>
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people"></i> Manage Users</h2>
+        <a asp-action="Dashboard" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-person-badge text-danger" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">@Model.Count(u => u.Role == PBLC.Web.Models.Enums.UserRole.Admin)</h4>
+                    <p class="text-muted mb-0">Admins</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-person-video3 text-success" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">@Model.Count(u => u.Role == PBLC.Web.Models.Enums.UserRole.Teacher)</h4>
+                    <p class="text-muted mb-0">Teachers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-person-workspace text-primary" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">@Model.Count(u => u.Role == PBLC.Web.Models.Enums.UserRole.Student)</h4>
+                    <p class="text-muted mb-0">Students</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-people-fill text-info" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">@Model.Count()</h4>
+                    <p class="text-muted mb-0">Total Users</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-tabs mb-3" id="userTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">
+                <i class="bi bi-people"></i> All Users (@Model.Count())
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="teachers-tab" data-bs-toggle="tab" data-bs-target="#teachers" type="button">
+                <i class="bi bi-person-video3"></i> Teachers (@Model.Count(u => u.Role == PBLC.Web.Models.Enums.UserRole.Teacher))
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button">
+                <i class="bi bi-person-workspace"></i> Students (@Model.Count(u => u.Role == PBLC.Web.Models.Enums.UserRole.Student))
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="admins-tab" data-bs-toggle="tab" data-bs-target="#admins" type="button">
+                <i class="bi bi-person-badge"></i> Admins (@Model.Count(u => u.Role == PBLC.Web.Models.Enums.UserRole.Admin))
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="userTabsContent">
+        <!-- All Users Tab -->
+        <div class="tab-pane fade show active" id="all" role="tabpanel">
+            @await Html.PartialAsync("_UsersTable", Model.OrderByDescending(u => u.CreatedAt))
+        </div>
+
+        <!-- Teachers Tab -->
+        <div class="tab-pane fade" id="teachers" role="tabpanel">
+            @await Html.PartialAsync("_UsersTable", Model.Where(u => u.Role == PBLC.Web.Models.Enums.UserRole.Teacher).OrderByDescending(u => u.CreatedAt))
+        </div>
+
+        <!-- Students Tab -->
+        <div class="tab-pane fade" id="students" role="tabpanel">
+            @await Html.PartialAsync("_UsersTable", Model.Where(u => u.Role == PBLC.Web.Models.Enums.UserRole.Student).OrderByDescending(u => u.CreatedAt))
+        </div>
+
+        <!-- Admins Tab -->
+        <div class="tab-pane fade" id="admins" role="tabpanel">
+            @await Html.PartialAsync("_UsersTable", Model.Where(u => u.Role == PBLC.Web.Models.Enums.UserRole.Admin).OrderByDescending(u => u.CreatedAt))
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteUser(userId, userName) {
+            if (confirm(`Are you sure you want to delete user "${userName}"?\n\nThis action cannot be undone.`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("DeleteUser", "Admin")/' + userId;
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function changeUserRole(userId, userName, currentRole) {
+            const roles = ['Admin', 'Teacher', 'Student'];
+            let roleOptions = '<option value="">Select Role</option>';
+            roles.forEach(role => {
+                if (role.toLowerCase() !== currentRole.toLowerCase()) {
+                    roleOptions += `<option value="${role}">${role}</option>`;
+                }
+            });
+            
+            const roleSelect = `
+                <div class="mb-3">
+                    <label class="form-label">Change role for: <strong>${userName}</strong></label>
+                    <select class="form-control" id="newRole">
+                        ${roleOptions}
+                    </select>
+                </div>
+            `;
+            
+            // You can implement a modal here or use a simple prompt
+            const newRole = prompt(`Change role for ${userName}\nCurrent role: ${currentRole}\n\nEnter new role (Admin/Teacher/Student):`);
+            
+            if (newRole && ['Admin', 'Teacher', 'Student'].includes(newRole)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("ChangeUserRole", "Admin")';
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                form.appendChild(userIdInput);
+                
+                const roleInput = document.createElement('input');
+                roleInput.type = 'hidden';
+                roleInput.name = 'newRole';
+                roleInput.value = newRole;
+                form.appendChild(roleInput);
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

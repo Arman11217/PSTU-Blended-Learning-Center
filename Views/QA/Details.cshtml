@@ -1,0 +1,212 @@
+@model PBLC.Web.Models.Entities.Question
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<PBLC.Web.Models.Entities.ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Question Details";
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+
+<div class="container">
+    <div class="mb-3">
+        <a href="@Url.Action("Index", new { courseId = Model.CourseId })" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Forum
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Question Card (Facebook Post Style) -->
+    <div class="card mb-4 shadow border-0">
+        <div class="card-body">
+            <!-- Question Author Header -->
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 50px; height: 50px; font-size: 1.5rem;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-0"><strong>@Model.Student?.FullName</strong></h6>
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i> @Model.CreatedAt.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                        @if (Model.Student?.Role == PBLC.Web.Models.Enums.UserRole.Teacher)
+                        {
+                            <span class="badge bg-primary ms-2">Teacher</span>
+                        }
+                        else if (Model.Student?.Role == PBLC.Web.Models.Enums.UserRole.Student)
+                        {
+                            <span class="badge bg-info ms-2">Student</span>
+                        }
+                    </small>
+                </div>
+                @if (Model.StudentId == currentUser?.Id)
+                {
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form asp-action="DeleteQuestion" method="post" 
+                                      onsubmit="return confirm('Are you sure? All answers will be deleted too!');">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-trash"></i> Delete Question
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                }
+            </div>
+
+            <!-- Question Content -->
+            <div class="mb-3">
+                <p class="mb-0" style="font-size: 1.15rem; line-height: 1.6;">
+                    @Model.Content
+                </p>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="border-top pt-3 mt-3">
+                <span class="text-muted">
+                    <i class="bi bi-chat-left-text-fill text-primary"></i> 
+                    <strong>@(Model.Answers?.Count ?? 0)</strong> Answers
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Write Answer Card (Facebook Comment Style) -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="mb-3"><i class="bi bi-reply-fill"></i> Write your answer</h5>
+            <div class="d-flex align-items-start">
+                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 45px; height: 45px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <form asp-action="PostAnswer" method="post">
+                        <input type="hidden" name="questionId" value="@Model.Id" />
+                        <textarea class="form-control border bg-light" name="answerText" rows="3" 
+                                  placeholder="Write your answer here..." required
+                                  style="resize: none;"></textarea>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-send-fill"></i> Post Answer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answers Section (Facebook Comments Style) -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="mb-4">
+                <i class="bi bi-chat-left-text-fill text-primary"></i> 
+                All Answers (@(Model.Answers?.Count ?? 0))
+            </h5>
+            
+            @if (Model.Answers != null && Model.Answers.Any())
+            {
+                foreach (var answer in Model.Answers.OrderBy(a => a.CreatedAt))
+                {
+                    <div class="mb-4 pb-3 border-bottom">
+                        <div class="d-flex align-items-start">
+                            <!-- Answer Author Avatar -->
+                            <div class="@(answer.User?.Role == PBLC.Web.Models.Enums.UserRole.Teacher ? "bg-primary" : "bg-secondary") 
+                                      text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                                 style="width: 45px; height: 45px; flex-shrink: 0;">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            
+                            <!-- Answer Content -->
+                            <div class="flex-grow-1">
+                                <!-- Answer Header -->
+                                <div class="bg-light rounded p-3 mb-2">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <strong>@answer.User?.FullName</strong>
+                                                @if (answer.User?.Role == PBLC.Web.Models.Enums.UserRole.Teacher)
+                                                {
+                                                    <span class="badge bg-primary ms-2">Teacher</span>
+                                                }
+                                                else if (answer.User?.Role == PBLC.Web.Models.Enums.UserRole.Student)
+                                                {
+                                                    <span class="badge bg-info ms-2">Student</span>
+                                                }
+                                            </h6>
+                                        </div>
+                                        @if (answer.UserId == currentUser?.Id)
+                                        {
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <form asp-action="DeleteAnswer" method="post" class="d-inline"
+                                                              onsubmit="return confirm('Are you sure you want to delete this answer?');">
+                                                            <input type="hidden" name="id" value="@answer.Id" />
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="bi bi-trash"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    <!-- Answer Text -->
+                                    <p class="mb-0" style="line-height: 1.6;">@answer.Content</p>
+                                </div>
+                                
+                                <!-- Answer Footer -->
+                                <small class="text-muted ms-2">
+                                    <i class="bi bi-clock"></i> @answer.CreatedAt.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-dots" style="font-size: 4rem; color: #dee2e6;"></i>
+                    <p class="text-muted mt-3 mb-0">No answers yet.</p>
+                    <p class="text-muted">Be the first to answer this question!</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 8px;
+    }
+    .form-control:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+    }
+</style>

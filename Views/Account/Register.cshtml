@@ -1,0 +1,124 @@
+@model PBLC.Web.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-plus-fill text-primary" style="font-size: 4rem;"></i>
+                        <h2 class="mt-3">Create Account</h2>
+                        <p class="text-muted">Join PSTU Blended Learning Center</p>
+                    </div>
+
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="FullName" class="form-control" id="floatingName" placeholder="Full Name" />
+                            <label for="floatingName">
+                                <i class="bi bi-person"></i> Full Name
+                            </label>
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Username" class="form-control" id="floatingUsername" placeholder="username" />
+                            <label for="floatingUsername">
+                                <i class="bi bi-at"></i> Username
+                            </label>
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                            <small class="text-muted d-block mt-1">
+                                <i class="bi bi-info-circle"></i> 3-50 characters, only letters, numbers, and underscores
+                            </small>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control" id="floatingEmail" placeholder="name@pstu.ac.bd" />
+                            <label for="floatingEmail">
+                                <i class="bi bi-envelope"></i> Email Address
+                            </label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <small class="text-muted d-block mt-1">
+                                <i class="bi bi-info-circle"></i> PSTU email addresses only (e.g., @@pstu.ac.bd, @@cse.pstu.ac.bd). One email = One account.
+                            </small>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="Role" class="form-select" id="floatingRole">
+                                        <option value="">Select Role</option>
+                                        <option value="3">Student</option>
+                                        <option value="2">Teacher</option>
+                                        <option value="1">Admin</option>
+                                    </select>
+                                    <label for="floatingRole">
+                                        <i class="bi bi-person-badge"></i> Role
+                                    </label>
+                                    <span asp-validation-for="Role" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="FacultyId" class="form-select" id="floatingFaculty">
+                                        <option value="">Select Faculty</option>
+                                        @if (ViewBag.Faculties != null)
+                                        {
+                                            @foreach (var faculty in ViewBag.Faculties)
+                                            {
+                                                <option value="@faculty.Id">@faculty.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <label for="floatingFaculty">
+                                        <i class="bi bi-building"></i> Faculty
+                                    </label>
+                                    <span asp-validation-for="FacultyId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Password" />
+                            <label for="floatingPassword">
+                                <i class="bi bi-lock"></i> Password
+                            </label>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <small class="text-muted">Minimum 6 characters, 1 uppercase, 1 digit</small>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" id="floatingConfirmPassword" placeholder="Confirm Password" />
+                            <label for="floatingConfirmPassword">
+                                <i class="bi bi-lock-fill"></i> Confirm Password
+                            </label>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-person-plus"></i> Register
+                            </button>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <p class="mb-0">Already have an account? 
+                                <a asp-action="Login" class="text-decoration-none fw-bold">Login here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

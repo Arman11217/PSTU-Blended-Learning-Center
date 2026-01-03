@@ -1,0 +1,55 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body text-center p-5">
+                    <i class="bi bi-shield-exclamation text-danger" style="font-size: 5rem;"></i>
+                    <h2 class="mt-4 text-danger">Access Denied</h2>
+                    <p class="lead text-muted mb-4">
+                        You don't have permission to access this resource.
+                    </p>
+                    <p class="text-muted">
+                        This page is restricted to certain user roles. Please contact your administrator if you believe this is an error.
+                    </p>
+                    <hr class="my-4">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                            <i class="bi bi-house-fill"></i> Go to Home
+                        </a>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-outline-secondary">
+                                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                                </a>
+                            }
+                            else if (User.IsInRole("Teacher"))
+                            {
+                                <a href="@Url.Action("Dashboard", "Teacher")" class="btn btn-outline-secondary">
+                                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                                </a>
+                            }
+                            else if (User.IsInRole("Student"))
+                            {
+                                <a href="@Url.Action("Dashboard", "Student")" class="btn btn-outline-secondary">
+                                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Account")" class="btn btn-outline-primary">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

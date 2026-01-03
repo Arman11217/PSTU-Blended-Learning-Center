@@ -1,0 +1,297 @@
+@{
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold"><i class="bi bi-mortarboard-fill"></i> Student Dashboard</h1>
+            <p class="text-muted">Welcome back, @User.Identity?.Name</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">Enrolled Courses</h6>
+                            <h2 class="card-title mb-0">@ViewBag.EnrolledCourses</h2>
+                        </div>
+                        <i class="bi bi-book-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">Pending Assignments</h6>
+                            <h2 class="card-title mb-0">@ViewBag.PendingAssignments</h2>
+                        </div>
+                        <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">Completed</h6>
+                            <h2 class="card-title mb-0">@ViewBag.CompletedAssignments</h2>
+                        </div>
+                        <i class="bi bi-check-circle-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">Average Grade</h6>
+                            <h2 class="card-title mb-0">@ViewBag.AverageGrade%</h2>
+                        </div>
+                        <i class="bi bi-graph-up" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="mb-3">Quick Actions</h3>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <a href="@Url.Action("EnrollInCourses", "Student")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-plus-circle text-danger" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">Enroll in Courses</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="@Url.Action("AvailableCourses", "Student")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-search text-primary" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">Browse Courses</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="@Url.Action("MyAssignments", "Student")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-file-earmark-check text-success" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">My Assignments</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="@Url.Action("Performance", "Student")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-bar-chart text-info" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">View Performance</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Enrolled Courses -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-book"></i> My Courses</h5>
+                    <a href="@Url.Action("EnrolledCourses", "Student")" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Courses != null && ViewBag.Courses.Count > 0)
+                    {
+                        <div class="row g-3">
+                            @foreach (var course in ViewBag.Courses)
+                            {
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-start border-primary border-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title">@course.Name</h6>
+                                            <p class="card-text text-muted small mb-2">@course.Code</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-person"></i> @course.Teacher?.FullName
+                                                </small>
+                                                <a href="@Url.Action("CourseDetails", "Student", new { id = course.Id })" class="btn btn-sm btn-outline-primary">
+                                                    View
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">You haven't enrolled in any courses yet</p>
+                            <a href="@Url.Action("AvailableCourses", "Student")" class="btn btn-primary">Browse Courses</a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Pending Assignments -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-hourglass-split"></i> Pending Assignments</h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.PendingAssignmentsList != null && ViewBag.PendingAssignmentsList.Count > 0)
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var assignment in ViewBag.PendingAssignmentsList)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">@assignment.Title</h6>
+                                            <small class="text-muted">@assignment.Course?.Name</small>
+                                            <br />
+                                            <small class="text-danger">
+                                                <i class="bi bi-clock"></i> Due: @assignment.DueDate.ToString("MMM dd, yyyy hh:mm tt")
+                                            </small>
+                                        </div>
+                                        <a href="@Url.Action("Submit", "Assignment", new { id = assignment.Id })" class="btn btn-sm btn-primary">
+                                            Submit
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">No pending assignments</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Upcoming Deadlines -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Upcoming Deadlines</h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.UpcomingDeadlines != null && ViewBag.UpcomingDeadlines.Count > 0)
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var deadline in ViewBag.UpcomingDeadlines)
+                            {
+                                <div class="list-group-item px-0 border-start border-warning border-3">
+                                    <h6 class="mb-1 small">@deadline.Title</h6>
+                                    <small class="text-danger">
+                                        <i class="bi bi-alarm"></i> @deadline.DueDate.ToString("MMM dd, hh:mm tt")
+                                    </small>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center small">No upcoming deadlines</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Performance Overview -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small>Overall Progress</small>
+                            <small class="text-muted">@ViewBag.OverallProgress%</small>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @ViewBag.OverallProgress%"></div>
+                        </div>
+                    </div>
+                    <hr />
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle text-success"></i> Assignments Submitted: @ViewBag.CompletedAssignments
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-clock text-warning"></i> Pending: @ViewBag.PendingAssignments
+                        </li>
+                        <li>
+                            <i class="bi bi-star text-warning"></i> Average Score: @ViewBag.AverageGrade%
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Recent Grades -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Recent Grades</h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.RecentGrades != null && ViewBag.RecentGrades.Count > 0)
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var grade in ViewBag.RecentGrades)
+                            {
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between">
+                                        <small>@grade.Assignment?.Title</small>
+                                        <span class="badge bg-primary">@grade.ObtainedMarks/@grade.Assignment?.MaxMarks</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center small">No grades yet</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>

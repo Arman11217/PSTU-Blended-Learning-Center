@@ -1,0 +1,459 @@
+﻿@{
+    ViewData["Title"] = "Home - PSTU Blended Learning Center";
+}
+
+<style>
+    .hero-section {
+        background: url('/images/pstu-campus.jpg') center/cover no-repeat;
+        padding: 140px 0 100px;
+        position: relative;
+        overflow: hidden;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 900;
+        line-height: 1.2;
+        margin-bottom: 25px;
+        text-shadow: 
+            3px 3px 10px rgba(0,0,0,0.8),
+            0 0 30px rgba(0,0,0,0.5),
+            0 0 60px rgba(0,0,0,0.3);
+        letter-spacing: 0.5px;
+        color: #ffffff;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.6rem;
+        font-weight: 500;
+        margin-bottom: 40px;
+        line-height: 1.7;
+        text-shadow: 
+            2px 2px 8px rgba(0,0,0,0.9),
+            0 0 20px rgba(0,0,0,0.6);
+        max-width: 700px;
+        color: #ffffff;
+        background-color: rgba(0,0,0,0.3);
+        padding: 15px 25px;
+        border-radius: 8px;
+        backdrop-filter: blur(5px);
+        display: inline-block;
+    }
+    
+    .btn-hero {
+        padding: 16px 40px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        border: none;
+    }
+    
+    .btn-hero-primary {
+        background: #fff;
+        color: #1e3c72;
+    }
+    
+    .btn-hero-primary:hover {
+        background: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .btn-hero-secondary {
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+        border: 2px solid #fff;
+    }
+    
+    .btn-hero-secondary:hover {
+        background: rgba(255,255,255,0.3);
+        transform: translateY(-2px);
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 0;
+        margin: 80px 0 0;
+    }
+    
+    .cta-card {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 50px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+    
+    .cta-text {
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.9);
+        margin-bottom: 35px;
+    }
+    
+    .info-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+    
+    .info-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 40px;
+        height: 100%;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border-color: #667eea;
+    }
+    
+    .info-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    
+    .info-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+    
+    .info-text {
+        color: #718096;
+        line-height: 1.8;
+        margin: 0;
+    }
+    
+    .feature-section {
+        padding: 80px 0;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #718096;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+    }
+    
+    .feature-item {
+        background: #fff;
+        padding: 40px 30px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border-color: transparent;
+    }
+    
+    .feature-icon-wrapper {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 25px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+    
+    .bg-blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
+    .bg-green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #fff; }
+    .bg-orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: #fff; }
+    .bg-cyan { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #fff; }
+    
+    .feature-item h4 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 15px;
+    }
+    
+    .feature-item p {
+        color: #718096;
+        line-height: 1.7;
+        margin: 0;
+    }
+    
+    .quick-action-section {
+        padding: 60px 0;
+        background: #fff;
+    }
+    
+    .action-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 35px;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .action-card:hover {
+        border-color: #667eea;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+    }
+    
+    .action-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+    
+    .action-card h5 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #2d3748;
+    }
+    
+    .action-card p {
+        color: #718096;
+        margin-bottom: 25px;
+    }
+    
+    .action-card .btn {
+        border-radius: 8px;
+        padding: 12px 30px;
+        font-weight: 600;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section text-white">
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="hero-title">PSTU Blended Learning Center</h1>
+                <p class="hero-subtitle">A Complete Digital Platform for Modern Education</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a href="@Url.Action("Index", "Course")" class="btn btn-hero btn-hero-primary">
+                            <i class="bi bi-journal-bookmark me-2"></i> Browse Courses
+                        </a>
+                        <a href="@Url.Action("Dashboard", "Home")" class="btn btn-hero btn-hero-secondary">
+                            <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Account")" class="btn btn-hero btn-hero-primary">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Get Started
+                        </a>
+                        <a href="@Url.Action("Register", "Account")" class="btn btn-hero btn-hero-secondary">
+                            <i class="bi bi-person-plus me-2"></i> Sign Up Free
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Cards Section -->
+<div class="info-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <i class="bi bi-people info-icon text-primary"></i>
+                    <h3 class="info-title">Learn Together</h3>
+                    <p class="info-text">Teachers and Students learn and teach together in an interactive environment</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <i class="bi bi-clock-history info-icon text-success"></i>
+                    <h3 class="info-title">Learn Anytime</h3>
+                    <p class="info-text">Access course materials, lectures and assignments anytime</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <i class="bi bi-trophy info-icon text-warning"></i>
+                    <h3 class="info-title">Track Progress</h3>
+                    <p class="info-text">View real-time performance tracking and detailed analytics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="feature-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Expand Your Learning Horizon</h2>
+            <p class="section-subtitle">A complete learning management system designed for both teachers and students</p>
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-icon-wrapper bg-blue">
+                    <i class="bi bi-book"></i>
+                </div>
+                <h4>Course Management</h4>
+                <p>Complete course creation, organization and enroll system</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon-wrapper bg-green">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <h4>Assignment Submission</h4>
+                <p>Easy assignment creation, submission and grading system</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon-wrapper bg-orange">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+                <h4>Q&A Forum</h4>
+                <p>An interactive discussion forum for open and engaging communication</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon-wrapper bg-cyan">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h4>Performance Analytics</h4>
+                <p>Detailed reports and analytics for tracking progress</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions for Logged-in Users -->
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="quick-action-section" id="quick-actions">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Quick Access</h2>
+                <p class="section-subtitle">Get quick access to your frequently used features</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <i class="bi bi-journal-bookmark action-icon text-primary"></i>
+                        <h5>Browse Courses</h5>
+                        <p>View all available courses and enroll</p>
+                        <a href="@Url.Action("Index", "Course")" class="btn btn-primary">
+                            View Courses <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <i class="bi bi-speedometer2 action-icon text-success"></i>
+                        <h5>Dashboard</h5>
+                        <p>Go to your personalized dashboard</p>
+                        <a href="@Url.Action("Dashboard", "Home")" class="btn btn-success">
+                            Go to Dashboard <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <i class="bi bi-chat-dots action-icon text-info"></i>
+                        <h5>Discussions</h5>
+                        <p>Ask questions and provide answers</p>
+                        <a href="@Url.Action("Index", "Course")" class="btn btn-info">
+                            Join Discussion <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- CTA Section -->
+<div class="cta-section text-white">
+    <div class="container">
+        <div class="cta-card">
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <h2 class="cta-title">Ready to Start Learning?</h2>
+                <p class="cta-text">Join today and start your learning journey</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="@Url.Action("Register", "Account")" class="btn btn-light btn-lg">
+                        <i class="bi bi-person-plus me-2"></i> Create Account
+                    </a>
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                    </a>
+                </div>
+            }
+            else
+            {
+                <h2 class="cta-title">Continue Your Learning Journey</h2>
+                <p class="cta-text">Return to your courses and assignments</p>
+                <a href="@Url.Action("Dashboard", "Home")" class="btn btn-light btn-lg">
+                    <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
+                </a>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+@{
+    ViewData["Title"] = "Submit Assignment";
+    var assignment = ViewBag.Assignment as PBLC.Web.Models.Entities.Assignment;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-upload"></i> Submit Assignment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5>@assignment?.Title</h5>
+                            <p class="text-muted">@assignment?.Description</p>
+                            <div class="d-flex justify-content-between">
+                                <span class="badge bg-info">Total Marks: @assignment?.MaxMarks</span>
+                                <span class="badge @(assignment?.DueDate < DateTime.Now ? "bg-danger" : "bg-success")">
+                                    Due: @assignment?.DueDate.ToString("MMM dd, yyyy hh:mm tt")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (assignment?.DueDate < DateTime.Now)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i> This assignment is past its due date. Late submission may not be accepted.
+                        </div>
+                    }
+
+                    <form asp-action="Submit" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="assignmentId" value="@assignment?.Id" />
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Submission Content</label>
+                            <textarea class="form-control" id="content" name="content" rows="6" placeholder="Type your answer here..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="file" class="form-label">OR Upload File</label>
+                            <input type="file" class="form-control" id="file" name="file">
+                            <div class="form-text">Accepted formats: PDF, DOC, DOCX, TXT, ZIP (Max: 10MB)</div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> You must provide either text content or upload a file (or both).
+                        </div>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("EnrolledCourses", "Student")" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload"></i> Submit Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const content = document.getElementById('content').value.trim();
+            const file = document.getElementById('file').files.length;
+            
+            if (!content && !file) {
+                e.preventDefault();
+                alert('Please provide submission content or upload a file.');
+            }
+        });
+    </script>
+}

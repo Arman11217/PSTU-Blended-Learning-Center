@@ -1,0 +1,107 @@
+@model PBLC.Web.Models.Entities.Assignment
+@{
+    ViewData["Title"] = "Assignment Submissions";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="bi bi-list-check"></i> Assignment Submissions</h2>
+
+    <!-- Assignment Info -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h4>@Model.Title</h4>
+            <p class="text-muted">@Model.Description</p>
+            <div class="d-flex gap-2">
+                <span class="badge bg-primary">Course: @Model.Course.Name</span>
+                <span class="badge bg-info">Total Marks: @Model.MaxMarks</span>
+                <span class="badge bg-secondary">Due: @Model.DueDate.ToString("MMM dd, yyyy")</span>
+                <span class="badge bg-success">
+                    Submissions: @(Model.Submissions?.Count ?? 0) / @(Model.Course.EnrolledStudents?.Count ?? 0)
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Submissions List -->
+    @if (Model.Submissions != null && Model.Submissions.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Email</th>
+                                <th>Submitted At</th>
+                                <th>Status</th>
+                                <th>Marks</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var submission in Model.Submissions.OrderBy(s => s.SubmittedAt))
+                            {
+                                <tr>
+                                    <td>@submission.Student.FullName</td>
+                                    <td>@submission.Student.Email</td>
+                                    <td>@submission.SubmittedAt.ToString("MMM dd, yyyy hh:mm tt")</td>
+                                    <td>
+                                        @if (submission.SubmittedAt > Model.DueDate)
+                                        {
+                                            <span class="badge bg-danger">Late</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">On Time</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (submission.ObtainedMarks.HasValue)
+                                        {
+                                            <span class="badge bg-primary">@submission.ObtainedMarks / @Model.MaxMarks</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Not Graded</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Evaluate", new { id = submission.Id })" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-pencil"></i> 
+                                            @(submission.ObtainedMarks.HasValue ? "Edit" : "Evaluate")
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #6c757d;"></i>
+                <h4 class="mt-3">No Submissions Yet</h4>
+                <p class="text-muted">Students haven't submitted this assignment yet.</p>
+            </div>
+        </div>
+    }
+
+    <div class="mt-3">
+        <a href="@Url.Action("MyCourses", "Teacher")" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to My Courses
+        </a>
+    </div>
+</div>

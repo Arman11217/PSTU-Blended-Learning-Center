@@ -1,0 +1,33 @@
+@model PBLC.Web.Models.Entities.Department
+@{
+    ViewData["Title"] = "Create Department";
+}
+
+<div class="container-fluid">
+    <h2>Create Department</h2>
+
+    <form asp-action="CreateDepartment" method="post">
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" name="Name" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Faculty</label>
+            <select name="FacultyId" class="form-select">
+                <option value="">-- Select Faculty --</option>
+                @foreach (var f in ViewBag.Faculties as IEnumerable<PBLC.Web.Models.Entities.Faculty> ?? Enumerable.Empty<PBLC.Web.Models.Entities.Faculty>())
+                {
+                    <option value="@f.Id">@f.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="Description"></textarea>
+        </div>
+
+        <button class="btn btn-primary">Create</button>
+    </form>
+</div>

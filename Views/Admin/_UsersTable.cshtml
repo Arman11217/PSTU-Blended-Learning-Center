@@ -1,0 +1,120 @@
+@model IEnumerable<PBLC.Web.Models.Entities.ApplicationUser>
+
+@if (Model != null && Model.Any())
+{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Faculty</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-2">
+                                            @user.FullName?.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <strong>@user.FullName</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code>@user.UserName</code>
+                                </td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @switch (user.Role)
+                                    {
+                                        case PBLC.Web.Models.Enums.UserRole.Admin:
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-person-badge"></i> Admin
+                                            </span>
+                                            break;
+                                        case PBLC.Web.Models.Enums.UserRole.Teacher:
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-person-video3"></i> Teacher
+                                            </span>
+                                            break;
+                                        case PBLC.Web.Models.Enums.UserRole.Student:
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-person-workspace"></i> Student
+                                            </span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.Faculty != null)
+                                    {
+                                        <small class="text-muted">@user.Faculty.Name</small>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">-</small>
+                                    }
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        @user.CreatedAt.ToString("MMM dd, yyyy")
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="@Url.Action("ViewUserDetails", "Admin", new { id = user.Id })" 
+                                           class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-warning" 
+                                                onclick="changeUserRole('@user.Id', '@user.UserName', '@user.Role')" 
+                                                title="Change Role">
+                                            <i class="bi bi-arrow-left-right"></i>
+                                        </button>
+                                        @if (user.Role != PBLC.Web.Models.Enums.UserRole.Admin)
+                                        {
+                                            <button type="button" class="btn btn-outline-danger" 
+                                                    onclick="deleteUser('@user.Id', '@user.UserName')" 
+                                                    title="Delete User">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> No users found in this category.
+    </div>
+}
+
+<style>
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+    }
+</style>

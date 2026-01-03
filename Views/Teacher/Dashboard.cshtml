@@ -1,0 +1,329 @@
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold"><i class="bi bi-person-workspace"></i> Teacher Dashboard</h1>
+            <p class="text-muted">Welcome back, @User.Identity?.Name</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">My Courses</h6>
+                            <h2 class="card-title mb-0">@ViewBag.MyCourses</h2>
+                        </div>
+                        <i class="bi bi-book-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">Total Students</h6>
+                            <h2 class="card-title mb-0">@ViewBag.TotalStudents</h2>
+                        </div>
+                        <i class="bi bi-people-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">Assignments</h6>
+                            <h2 class="card-title mb-0">@ViewBag.TotalAssignments</h2>
+                        </div>
+                        <i class="bi bi-file-earmark-text-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-subtitle mb-2 opacity-75">Pending Reviews</h6>
+                            <h2 class="card-title mb-0">@ViewBag.PendingSubmissions</h2>
+                        </div>
+                        <i class="bi bi-hourglass-split" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="mb-3">Quick Actions</h3>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <a href="@Url.Action("CreateCourse", "Teacher")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-plus-circle text-primary" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">Create Course</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="@Url.Action("SelectCourse", "Lecture")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-cloud-upload text-success" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">Upload Lecture</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="@Url.Action("SelectCourse", "Assignment")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-file-plus text-warning" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">Create Assignment</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="@Url.Action("SelectCourseForReview", "Assignment")" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm h-100 hover-shadow">
+                            <div class="card-body text-center">
+                                <i class="bi bi-clipboard-check text-info" style="font-size: 2.5rem;"></i>
+                                <h6 class="card-title mt-3">Review Submissions</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Courses & Recent Activity -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-book"></i> My Courses</h5>
+                    <a href="@Url.Action("MyCourses", "Teacher")" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Courses != null && ViewBag.Courses.Count > 0)
+                    {
+                        <div class="row g-4">
+                            @foreach (var course in ViewBag.Courses)
+                            {
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm hover-card">
+                                        <div class="card-header bg-primary text-white">
+                                            <h5 class="mb-0">@course.Name</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <small class="text-muted"><i class="bi bi-tag"></i> Code: <strong>@course.Code</strong></small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <small class="text-muted"><i class="bi bi-building"></i> @course.Department?.Name</small>
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(course.Description))
+                                            {
+                                                <p class="card-text small text-secondary">
+                                                    @course.Description.Substring(0, Math.Min(80, course.Description.Length))@(course.Description.Length > 80 ? "..." : "")
+                                                </p>
+                                            }
+                                            
+                                            <!-- Stats Row -->
+                                            <div class="row text-center mb-3 mt-4">
+                                                <div class="col-4">
+                                                    <h3 class="mb-0 text-primary">@(course.EnrolledStudents?.Count ?? 0)</h3>
+                                                    <small class="text-muted">Students</small>
+                                                </div>
+                                                <div class="col-4">
+                                                    <h3 class="mb-0 text-success">@(course.Lectures?.Count ?? 0)</h3>
+                                                    <small class="text-muted">Lectures</small>
+                                                </div>
+                                                <div class="col-4">
+                                                    <h3 class="mb-0 text-warning">@(course.Assignments?.Count ?? 0)</h3>
+                                                    <small class="text-muted">Assignments</small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Action Buttons -->
+                                            <div class="d-grid gap-2">
+                                                <a href="@Url.Action("Details", "Course", new { id = course.Id })" 
+                                                   class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-eye"></i> View Course
+                                                </a>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a href="@Url.Action("Upload", "Lecture", new { courseId = course.Id })" 
+                                                       class="btn btn-outline-success">
+                                                        <i class="bi bi-cloud-upload"></i> Upload Lecture
+                                                    </a>
+                                                    <a href="@Url.Action("Create", "Assignment", new { courseId = course.Id })" 
+                                                       class="btn btn-outline-warning">
+                                                        <i class="bi bi-file-earmark-plus"></i> Add Assignment
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-3">No courses yet. Create your first course!</p>
+                            <a href="@Url.Action("CreateCourse", "Teacher")" class="btn btn-primary">Create Course</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Notifications -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted text-center py-3">No recent activity</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-bell"></i> Notifications</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> @ViewBag.PendingSubmissions new submission(s) to review
+                            </small>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <small class="text-muted">
+                                <i class="bi bi-chat-dots"></i> New questions in Q&A forum
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Upcoming Deadlines</h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.UpcomingAssignments != null)
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var assignment in ViewBag.UpcomingAssignments)
+                            {
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">@assignment.Title</h6>
+                                            <small class="text-danger">
+                                                <i class="bi bi-clock"></i> Due: @assignment.DueDate.ToString("MMM dd, yyyy hh:mm tt")
+                                            </small>
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="bi bi-journal-text"></i> @assignment.Course?.Name
+                                            </small>
+                                        </div>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="@Url.Action("Edit", "Assignment", new { id = assignment.Id })" 
+                                               class="btn btn-outline-warning" title="Edit Assignment">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" 
+                                                    onclick="deleteAssignment(@assignment.Id, '@assignment.Title')" 
+                                                    title="Delete Assignment">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">No upcoming deadlines</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.2) !important;
+    }
+    .hover-card .card-header {
+        border-bottom: none;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function deleteAssignment(assignmentId, assignmentTitle) {
+            if (confirm(`Are you sure you want to delete "${assignmentTitle}"?\n\nNote: You cannot delete assignments with existing submissions.`)) {
+                // Create a form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("Delete", "Assignment")/' + assignmentId;
+                
+                // Add anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

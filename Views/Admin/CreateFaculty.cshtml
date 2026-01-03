@@ -1,0 +1,22 @@
+@model PBLC.Web.Models.Entities.Faculty
+@{
+    ViewData["Title"] = "Create Faculty";
+}
+
+<div class="container-fluid">
+    <h2>Create Faculty</h2>
+
+    <form asp-action="CreateFaculty" method="post">
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" name="Name" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="Description"></textarea>
+        </div>
+
+        <button class="btn btn-primary">Create</button>
+    </form>
+</div>

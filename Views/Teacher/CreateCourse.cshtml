@@ -1,0 +1,99 @@
+@model PBLC.Web.Models.Entities.Course
+@{
+    ViewData["Title"] = "Create Course";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="bi bi-plus-circle"></i> Create New Course</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateCourse" method="post">
+                        <div asp-validation-summary="All" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Course Name *</label>
+                            <input asp-for="Name" class="form-control" placeholder="e.g., Data Structures and Algorithms" required />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Code" class="form-label">Course Code *</label>
+                            <input asp-for="Code" class="form-control" placeholder="e.g., CSE-201" required />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Faculty *</label>
+                            <select id="facultySelect" class="form-select" required>
+                                <option value="">-- Select Faculty --</option>
+                                @if (ViewBag.Faculties != null)
+                                {
+                                    @foreach (var faculty in ViewBag.Faculties)
+                                    {
+                                        <option value="@faculty.Id">@faculty.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DepartmentId" class="form-label">Department *</label>
+                            <select asp-for="DepartmentId" id="departmentSelect" class="form-select" required>
+                                <option value="">-- Select Faculty First --</option>
+                            </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter course description..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Create Course
+                            </button>
+                            <a asp-action="MyCourses" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('facultySelect').addEventListener('change', function() {
+            const facultyId = this.value;
+            const departmentSelect = document.getElementById('departmentSelect');
+            
+            departmentSelect.innerHTML = '<option value="">-- Loading... --</option>';
+            
+            if (facultyId) {
+                fetch(`/Teacher/GetDepartmentsByFaculty?facultyId=${facultyId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        departmentSelect.innerHTML = '<option value="">-- Select Department --</option>';
+                        data.forEach(dept => {
+                            departmentSelect.innerHTML += `<option value="${dept.id}">${dept.name}</option>`;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        departmentSelect.innerHTML = '<option value="">-- Error loading departments --</option>';
+                    });
+            } else {
+                departmentSelect.innerHTML = '<option value="">-- Select Faculty First --</option>';
+            }
+        });
+    </script>
+}

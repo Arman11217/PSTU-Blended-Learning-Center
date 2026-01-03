@@ -1,0 +1,87 @@
+@model IEnumerable<PBLC.Web.Models.Entities.Course>
+@{
+    ViewData["Title"] = "Available Courses";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="bi bi-search"></i> Available Courses to Enroll</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var course in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm hover-card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">@course.Name</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-code-square"></i> <strong>Code:</strong> @course.Code
+                            </p>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-person"></i> <strong>Teacher:</strong> @course.Teacher?.FullName
+                            </p>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-building"></i> <strong>Department:</strong> @course.Department?.Name
+                            </p>
+                            <p class="card-text">@course.Description</p>
+                            
+                            <div class="mt-3">
+                                <span class="badge bg-info">
+                                    <i class="bi bi-people"></i> @course.EnrolledStudents?.Count students enrolled
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-grid gap-2">
+                                <a href="@Url.Action("Details", "Course", new { id = course.Id })" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                                <form asp-action="EnrollCourse" method="post">
+                                    <input type="hidden" name="courseId" value="@course.Id" />
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="bi bi-person-plus"></i> Enroll Now
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-check-circle" style="font-size: 4rem; color: #28a745;"></i>
+                <h4 class="mt-3">All Caught Up!</h4>
+                <p class="text-muted">You are enrolled in all available courses.</p>
+                <a asp-action="EnrolledCourses" class="btn btn-primary mt-3">
+                    <i class="bi bi-book"></i> View My Courses
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+        border: none;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.2) !important;
+    }
+</style>

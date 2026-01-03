@@ -1,0 +1,221 @@
+@model PBLC.Web.Models.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-person-circle"></i> User Details</h4>
+                        <a asp-action="ManageUsers" class="btn btn-light btn-sm">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- User Avatar -->
+                    <div class="text-center mb-4">
+                        <div class="avatar-large mx-auto mb-3">
+                            @Model.FullName?.Substring(0, 1).ToUpper()
+                        </div>
+                        <h3>@Model.FullName</h3>
+                        @switch (Model.Role)
+                        {
+                            case PBLC.Web.Models.Enums.UserRole.Admin:
+                                <span class="badge bg-danger fs-6">
+                                    <i class="bi bi-person-badge"></i> Administrator
+                                </span>
+                                break;
+                            case PBLC.Web.Models.Enums.UserRole.Teacher:
+                                <span class="badge bg-success fs-6">
+                                    <i class="bi bi-person-video3"></i> Teacher
+                                </span>
+                                break;
+                            case PBLC.Web.Models.Enums.UserRole.Student:
+                                <span class="badge bg-primary fs-6">
+                                    <i class="bi bi-person-workspace"></i> Student
+                                </span>
+                                break;
+                        }
+                    </div>
+
+                    <hr>
+
+                    <!-- User Information -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong><i class="bi bi-person"></i> Username:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            <code>@Model.UserName</code>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong><i class="bi bi-envelope"></i> Email:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Email
+                            @if (Model.EmailConfirmed)
+                            {
+                                <span class="badge bg-success ms-2">
+                                    <i class="bi bi-check-circle"></i> Verified
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong><i class="bi bi-building"></i> Faculty:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @if (Model.Faculty != null)
+                            {
+                                @Model.Faculty.Name
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not assigned</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong><i class="bi bi-calendar-check"></i> Joined:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.CreatedAt.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong><i class="bi bi-activity"></i> Status:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Active
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle"></i> Inactive
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Quick Actions -->
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-warning" 
+                                onclick="changeUserRole('@Model.Id', '@Model.UserName', '@Model.Role')">
+                            <i class="bi bi-arrow-left-right"></i> Change Role
+                        </button>
+                        
+                        <form asp-action="ToggleUserStatus" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-info w-100">
+                                <i class="bi bi-toggle-on"></i> Toggle Active Status
+                            </button>
+                        </form>
+
+                        @if (Model.Role != PBLC.Web.Models.Enums.UserRole.Admin)
+                        {
+                            <button type="button" class="btn btn-danger" 
+                                    onclick="deleteUser('@Model.Id', '@Model.UserName')">
+                                <i class="bi bi-trash"></i> Delete User
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 48px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function deleteUser(userId, userName) {
+            if (confirm(`Are you sure you want to delete user "${userName}"?\n\nThis action cannot be undone.`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("DeleteUser", "Admin")/' + userId;
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function changeUserRole(userId, userName, currentRole) {
+            const newRole = prompt(`Change role for ${userName}\nCurrent role: ${currentRole}\n\nEnter new role (Admin/Teacher/Student):`);
+            
+            if (newRole && ['Admin', 'Teacher', 'Student'].includes(newRole)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("ChangeUserRole", "Admin")';
+                
+                const userIdInput = document.createElement('input');
+                userIdInput.type = 'hidden';
+                userIdInput.name = 'userId';
+                userIdInput.value = userId;
+                form.appendChild(userIdInput);
+                
+                const roleInput = document.createElement('input');
+                roleInput.type = 'hidden';
+                roleInput.name = 'newRole';
+                roleInput.value = newRole;
+                form.appendChild(roleInput);
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            } else if (newRole) {
+                alert('Invalid role! Please enter Admin, Teacher, or Student.');
+            }
+        }
+    </script>
+}

@@ -1,0 +1,211 @@
+@{
+    ViewData["Title"] = "Enroll in Courses";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6 fw-bold"><i class="bi bi-journal-plus"></i> Enroll in Courses</h1>
+            <p class="text-muted">Select a faculty, then department, and finally choose a course to enroll</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <!-- Step 1: Select Faculty -->
+                    <div class="mb-4">
+                        <h5 class="mb-3"><span class="badge bg-primary">1</span> Select Faculty</h5>
+                        <select class="form-select form-select-lg" id="facultySelect">
+                            <option value="">-- Choose a Faculty --</option>
+                            @if (ViewBag.Faculties != null)
+                            {
+                                @foreach (var faculty in ViewBag.Faculties)
+                                {
+                                    <option value="@faculty.Id">@faculty.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Step 2: Select Department -->
+                    <div class="mb-4" id="departmentSection" style="display: none;">
+                        <h5 class="mb-3"><span class="badge bg-success">2</span> Select Department</h5>
+                        <select class="form-select form-select-lg" id="departmentSelect">
+                            <option value="">-- Choose a Department --</option>
+                        </select>
+                        <div class="mt-2 text-center" id="departmentLoading" style="display: none;">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <span class="ms-2 text-muted">Loading departments...</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Select Course -->
+                    <div class="mb-4" id="courseSection" style="display: none;">
+                        <h5 class="mb-3"><span class="badge bg-info">3</span> Select Course</h5>
+                        <div id="coursesList" class="row g-3">
+                            <!-- Courses will be loaded here -->
+                        </div>
+                        <div class="mt-3 text-center" id="courseLoading" style="display: none;">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <span class="ms-2 text-muted">Loading courses...</span>
+                        </div>
+                        <div class="mt-3 text-center" id="noCoursesMessage" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i> No available courses found in this department or you're already enrolled in all courses.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 mb-5">
+                <a href="@Url.Action("Dashboard", "Student")" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add bottom spacing to prevent footer overlap -->
+<div style="height: 80px;"></div>
+
+@section Scripts {
+<script>
+    const facultySelect = document.getElementById('facultySelect');
+    const departmentSelect = document.getElementById('departmentSelect');
+    const departmentSection = document.getElementById('departmentSection');
+    const departmentLoading = document.getElementById('departmentLoading');
+    const courseSection = document.getElementById('courseSection');
+    const coursesList = document.getElementById('coursesList');
+    const courseLoading = document.getElementById('courseLoading');
+    const noCoursesMessage = document.getElementById('noCoursesMessage');
+
+    // When faculty is selected, load departments
+    facultySelect.addEventListener('change', function() {
+        const facultyId = this.value;
+        
+        // Reset department and course selections
+        departmentSelect.innerHTML = '<option value="">-- Choose a Department --</option>';
+        coursesList.innerHTML = '';
+        departmentSection.style.display = 'none';
+        courseSection.style.display = 'none';
+        noCoursesMessage.style.display = 'none';
+
+        if (facultyId) {
+            departmentLoading.style.display = 'block';
+            departmentSection.style.display = 'block';
+
+            fetch(`/Student/GetDepartmentsByFaculty?facultyId=${facultyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    departmentLoading.style.display = 'none';
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(dept => {
+                            const option = document.createElement('option');
+                            option.value = dept.id;
+                            option.textContent = dept.name;
+                            departmentSelect.appendChild(option);
+                        });
+                    } else {
+                        departmentSelect.innerHTML = '<option value="">No departments found</option>';
+                    }
+                })
+                .catch(error => {
+                    departmentLoading.style.display = 'none';
+                    console.error('Error loading departments:', error);
+                    alert('Error loading departments. Please try again.');
+                });
+        }
+    });
+
+    // When department is selected, load courses
+    departmentSelect.addEventListener('change', function() {
+        const departmentId = this.value;
+        
+        // Reset course selection
+        coursesList.innerHTML = '';
+        courseSection.style.display = 'none';
+        noCoursesMessage.style.display = 'none';
+
+        if (departmentId) {
+            courseLoading.style.display = 'block';
+            courseSection.style.display = 'block';
+
+            fetch(`/Student/GetCoursesByDepartment?departmentId=${departmentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    courseLoading.style.display = 'none';
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(course => {
+                            const courseCard = `
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-start border-primary border-4">
+                                        <div class="card-body">
+                                            <h6 class="card-title">${course.name}</h6>
+                                            <p class="card-text text-muted small mb-2">${course.code}</p>
+                                            <p class="card-text small text-secondary">${course.description || 'No description available'}</p>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <small class="text-muted">
+                                                    <i class="bi bi-person"></i> ${course.teacherName}
+                                                </small>
+                                                <form method="post" action="/Student/EnrollCourse" style="display: inline;">
+                                                    <input type="hidden" name="courseId" value="${course.id}" />
+                                                    <button type="submit" class="btn btn-sm btn-primary">
+                                                        <i class="bi bi-check-circle"></i> Enroll
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            coursesList.insertAdjacentHTML('beforeend', courseCard);
+                        });
+                    } else {
+                        noCoursesMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    courseLoading.style.display = 'none';
+                    console.error('Error loading courses:', error);
+                    alert('Error loading courses. Please try again.');
+                });
+        }
+    });
+</script>
+}
+
+<style>
+    .card {
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    .badge {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+</style>

@@ -1,0 +1,220 @@
+@{
+    ViewData["Title"] = "Performance";
+    var totalSubmissions = ViewBag.TotalSubmissions as int? ?? 0;
+    var totalCourses = ViewBag.TotalCourses as int? ?? 0;
+    var averageGrade = ViewBag.AverageGrade as double? ?? 0;
+    var highestGrade = ViewBag.HighestGrade as double? ?? 0;
+    var lowestGrade = ViewBag.LowestGrade as double? ?? 0;
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="bi bi-graph-up-arrow"></i> My Performance</h2>
+
+    <!-- Overall Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-check" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">@totalSubmissions</h3>
+                    <p class="mb-0">Total Submissions</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-book" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">@totalCourses</h3>
+                    <p class="mb-0">Enrolled Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-star-fill" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">@averageGrade.ToString("F1")%</h3>
+                    <p class="mb-0">Average Grade</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-trophy" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">@highestGrade.ToString("F1")%</h3>
+                    <p class="mb-0">Highest Grade</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Chart -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Grade Distribution</h5>
+                </div>
+                <div class="card-body">
+                    @if (totalSubmissions > 0)
+                    {
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h6>Average Grade</h6>
+                                <div class="progress" style="height: 30px;">
+                                    <div class="progress-bar @(averageGrade >= 80 ? "bg-success" : averageGrade >= 60 ? "bg-primary" : averageGrade >= 40 ? "bg-warning" : "bg-danger")" 
+                                         role="progressbar" 
+                                         style="width: @averageGrade%">
+                                        @averageGrade.ToString("F1")%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Highest Grade</h6>
+                                <div class="progress" style="height: 30px;">
+                                    <div class="progress-bar bg-success" 
+                                         role="progressbar" 
+                                         style="width: @highestGrade%">
+                                        @highestGrade.ToString("F1")%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Lowest Grade</h6>
+                                <div class="progress" style="height: 30px;">
+                                    <div class="progress-bar bg-danger" 
+                                         role="progressbar" 
+                                         style="width: @lowestGrade%">
+                                        @lowestGrade.ToString("F1")%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle"></i> No graded assignments yet. Complete and submit assignments to see your performance.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course-wise Performance -->
+    @if (ViewBag.CoursePerformance != null && ((IEnumerable<dynamic>)ViewBag.CoursePerformance).Any())
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-book-half"></i> Course-wise Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Course Name</th>
+                                        <th>Course Code</th>
+                                        <th>Submissions</th>
+                                        <th>Average Grade</th>
+                                        <th>Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in (IEnumerable<dynamic>)ViewBag.CoursePerformance)
+                                    {
+                                        var course = (PBLC.Web.Models.Entities.Course)item.Course;
+                                        var submissions = (List<PBLC.Web.Models.Entities.AssignmentSubmission>)item.Submissions;
+                                        var average = (double)item.Average;
+                                        
+                                        <tr>
+                                            <td>@course.Name</td>
+                                            <td>@course.Code</td>
+                                            <td>@submissions.Count</td>
+                                            <td>@average.ToString("F1")%</td>
+                                            <td>
+                                                <div class="progress" style="height: 25px; min-width: 200px;">
+                                                    <div class="progress-bar @(average >= 80 ? "bg-success" : average >= 60 ? "bg-primary" : average >= 40 ? "bg-warning" : "bg-danger")" 
+                                                         role="progressbar" 
+                                                         style="width: @average%">
+                                                        @average.ToString("F1")%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Recent Submissions -->
+    @if (ViewBag.RecentSubmissions != null && ((List<PBLC.Web.Models.Entities.AssignmentSubmission>)ViewBag.RecentSubmissions).Any())
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Graded Assignments</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Assignment</th>
+                                        <th>Course</th>
+                                        <th>Submitted</th>
+                                        <th>Marks</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var submission in (List<PBLC.Web.Models.Entities.AssignmentSubmission>)ViewBag.RecentSubmissions)
+                                    {
+                                        var percentage = (double)submission.ObtainedMarks!.Value / submission.Assignment.MaxMarks * 100;
+                                        
+                                        <tr>
+                                            <td>@submission.Assignment.Title</td>
+                                            <td>@submission.Assignment.Course.Name</td>
+                                            <td>@submission.SubmittedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>@submission.ObtainedMarks / @submission.Assignment.MaxMarks</td>
+                                            <td>
+                                                <span class="badge @(percentage >= 80 ? "bg-success" : percentage >= 60 ? "bg-primary" : percentage >= 40 ? "bg-warning" : "bg-danger")">
+                                                    @percentage.ToString("F0")%
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (totalSubmissions == 0)
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-graph-up" style="font-size: 5rem; color: #6c757d;"></i>
+                <h3 class="mt-3">No Performance Data Yet</h3>
+                <p class="text-muted">Complete and submit assignments to see your performance analytics.</p>
+                <a href="@Url.Action("EnrolledCourses")" class="btn btn-primary mt-3">
+                    <i class="bi bi-book"></i> Browse My Courses
+                </a>
+            </div>
+        </div>
+    }
+</div>

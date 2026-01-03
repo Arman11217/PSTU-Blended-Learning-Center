@@ -1,0 +1,155 @@
+@model IEnumerable<PBLC.Web.Models.Entities.Question>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<PBLC.Web.Models.Entities.ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Q&A Forum";
+    var course = ViewBag.Course as PBLC.Web.Models.Entities.Course;
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-chat-dots-fill text-primary"></i> Q&A Forum</h2>
+            <p class="text-muted mb-0"><i class="bi bi-book"></i> @course?.Code - @course?.Name</p>
+        </div>
+        <a href="@Url.Action("Details", "Course", new { id = course?.Id })" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Course
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Ask Question Card (Facebook Post Style) -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body">
+            <div class="d-flex align-items-start">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                     style="width: 50px; height: 50px; font-size: 1.5rem;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <form asp-action="AskQuestion" method="post">
+                        <input type="hidden" name="courseId" value="@course?.Id" />
+                        <textarea class="form-control border-0 bg-light" name="questionText" rows="3" 
+                                  placeholder="What's your question, @currentUser?.FullName?" required
+                                  style="resize: none;"></textarea>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send-fill"></i> Post Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions Feed (Facebook Style) -->
+    @if (Model != null && Model.Any())
+    {
+        foreach (var question in Model)
+        {
+            <div class="card mb-3 shadow-sm border-0 hover-card">
+                <div class="card-body">
+                    <!-- User Info Header -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 45px; height: 45px;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">@question.Student?.FullName</h6>
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i> @question.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")
+                                @if (question.Student?.Role == PBLC.Web.Models.Enums.UserRole.Teacher)
+                                {
+                                    <span class="badge bg-primary ms-2">Teacher</span>
+                                }
+                                else if (question.Student?.Role == PBLC.Web.Models.Enums.UserRole.Student)
+                                {
+                                    <span class="badge bg-info ms-2">Student</span>
+                                }
+                            </small>
+                        </div>
+                        @if (question.StudentId == currentUser?.Id)
+                        {
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form asp-action="DeleteQuestion" method="post" 
+                                              onsubmit="return confirm('Are you sure you want to delete this question?');">
+                                            <input type="hidden" name="id" value="@question.Id" />
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Question Content -->
+                    <div class="mb-3">
+                        <p class="mb-0" style="font-size: 1.1rem;">@question.Content</p>
+                    </div>
+
+                    <!-- Interaction Bar -->
+                    <div class="border-top pt-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">
+                                <i class="bi bi-chat-left-text-fill text-primary"></i> 
+                                <strong>@(question.Answers?.Count ?? 0)</strong> Answers
+                            </span>
+                            <a href="@Url.Action("Details", new { id = question.Id })" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-reply-fill"></i> View & Answer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-chat-dots" style="font-size: 5rem; color: #dee2e6;"></i>
+                </div>
+                <h4 class="text-muted">No Questions Yet</h4>
+                <p class="text-muted">Be the first to start a discussion in this course!</p>
+                <p class="small text-muted">Ask questions, share knowledge, and help each other learn.</p>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>

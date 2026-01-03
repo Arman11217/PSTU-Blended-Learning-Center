@@ -1,0 +1,115 @@
+@model IEnumerable<PBLC.Web.Models.Entities.Faculty>
+@{
+    ViewData["Title"] = "Manage Faculties";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-building"></i> Manage Faculties</h2>
+        <a asp-action="CreateFaculty" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create Faculty
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var f in Model)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card shadow-sm hover-card">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-bank"></i> @f.Name</h5>
+                            <div class="btn-group btn-group-sm">
+                                <a href="@Url.Action("EditFaculty", "Admin", new { id = f.Id })" 
+                                   class="btn btn-light" title="Edit Faculty">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-danger" 
+                                        onclick="deleteFaculty(@f.Id, '@f.Name')" 
+                                        title="Delete Faculty">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">@f.Description</p>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-info">
+                                    <i class="bi bi-building"></i> @(f.Departments?.Count ?? 0) Departments
+                                </span>
+                                <small class="text-muted">
+                                    Created: @f.CreatedAt.ToString("MMM dd, yyyy")
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                <h4 class="mt-3">No Faculties Yet</h4>
+                <p class="text-muted">Create your first faculty to get started!</p>
+                <a asp-action="CreateFaculty" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus-circle"></i> Create First Faculty
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.15) !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function deleteFaculty(facultyId, facultyName) {
+            if (confirm(`Are you sure you want to delete "${facultyName}"?\n\nWarning: This will also affect all related departments and courses!`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("DeleteFaculty", "Admin")/' + facultyId;
+                
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+}

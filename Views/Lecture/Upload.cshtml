@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Upload Lecture";
+    var course = ViewBag.Course as PBLC.Web.Models.Entities.Course;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-cloud-upload"></i> Upload Lecture</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Uploading lecture for: <strong>@course?.Name</strong>
+                    </div>
+
+                    <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="courseId" value="@course?.Id" />
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Lecture Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Optional lecture description"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Upload File (PDF, PPT, DOC, etc.)</label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".pdf,.ppt,.pptx,.doc,.docx,.txt">
+                            <div class="form-text">Maximum file size: 50MB</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="videoUrl" class="form-label">OR Video URL (YouTube, Google Drive, etc.)</label>
+                            <input type="url" class="form-control" id="videoUrl" name="videoUrl" placeholder="https://www.youtube.com/watch?v=...">
+                            <div class="form-text">Provide a direct link to the video resource</div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> You must provide either a file or a video URL (or both).
+                        </div>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("MyCourses", "Teacher")" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-cloud-upload"></i> Upload Lecture
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const file = document.getElementById('file').files.length;
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            
+            if (!file && !videoUrl) {
+                e.preventDefault();
+                alert('Please upload a file or provide a video URL.');
+            }
+        });
+    </script>
+}
